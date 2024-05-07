@@ -1,6 +1,7 @@
 # Ex-12-IMPLEMENTATION-OF-HEAP-STORAGE-ALLOCATION-STRATEGY
 IMPLEMENTATION OF HEAP STORAGE ALLOCATION STRATEGY
-# Date :
+# Register No: 212222040178
+# Date : 24.4.2024
 # Aim :
 To write a program to implement heap storage allocation strategy.
 # ALGORITHM
@@ -13,282 +14,253 @@ To write a program to implement heap storage allocation strategy.
 7. Define a function delete() to remove an element from the list.
 8. Stop the program.
 # PROGRAM
-# Exp12.c
 ```
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #define TRUE 1
 #define FALSE 0
-typedef struct Heap
-{
-int data;
-struct Heap *next;
-}
-node;
+
+typedef struct Heap {
+    int data;
+    struct Heap *next;
+} node;
+
+// Function prototypes
 node *create();
-void main()
-{
-int choice,val;
-char ans;
-node *head;
 void display(node *);
-node *search(node *,int);
+node *search(node *, int);
 node *insert(node *);
 void dele(node **);
-head=NULL;
-do
-{
-printf("\nprogram to perform various operations on heap using dynamic memory management");
-printf("\n1.create");
-printf("\n2.display");
-printf("\n3.insert an element in a list");
-printf("\n4.delete an element from list");
-printf("\n5.quit");
-printf("\nenter your chioce(1-5)");
-scanf("%d",&choice);
-switch(choice)
-{
-case 1:head=create();
-break;
-case 2:display(head);
-break;
-case 3:head=insert(head);
-break;
-case 4:dele(&head);
-break;
-case 5:exit(0);
-default:
-printf("invalid choice,try again");
-}
-}
-while(choice!=5);
-}
-node* create()
-{
-node *temp,*New,*head;
-int val,flag;
-char ans='y';
 node *get_node();
-temp=NULL;
-flag=TRUE;
-do
-{
-printf("\n enter the element:");
-scanf("%d",&val);
-New=get_node();
-if(New==NULL)
-printf("\nmemory is not allocated");
-New->data=val;
-if(flag==TRUE)
-{
-head=New;
-temp=head;
-flag=FALSE;
-}
-else
-{
-temp->next=New;
-temp=New;
-}
-printf("\ndo you want to enter more elements?(y/n)");
-}
-while(ans=='y');
-printf("\nthe list is created\n");
-return head;
-}
-node *get_node()
-{
-node *temp;
-temp=(node*)malloc(sizeof(node));
-temp->next=NULL;
-return temp;
-}
-void display(node *head)
-{
-node *temp;
-temp=head;
-if(temp==NULL)
-{
-printf("\nthe list is empty\n");
-return;
-}
-while(temp!=NULL)
-{
-printf("%d->",temp->data);
-temp=temp->next;
-}
-printf("NULL");
-}
-node *search(node *head,int key)
-{
-node *temp;
-int found;
-temp=head;
-if(temp==NULL)
-{
-printf("the linked list is empty\n");
-return NULL;
-}
-found=FALSE;
-while(temp!=NULL && found==FALSE)
-{
-if(temp->data!=key)
-temp=temp->next;
-else
-found=TRUE;
-}
-if(found==TRUE)
-{
-printf("\nthe element is present in the list\n");
-return temp;
-}
-else
-{
-printf("the element is not present in the list\n");
-return NULL;
-}
-}
-node *insert(node *head)
-{
-int choice;
 node *insert_head(node *);
+node *insert_last(node *);
 void insert_after(node *);
-void insert_last(node *);
-printf("n1.insert a node as a head node");
-printf("n2.insert a node as a head node");
-printf("n3.insert a node at intermediate position in t6he list");
-printf("\nenter your choice for insertion of node:");
-scanf("%d",&choice);
-switch(choice)
-{
-case 1:head=insert_head(head);
-break;
-case 2:insert_last(head);
-break;
-case 3:insert_after(head);
-break;
+
+// Function definitions
+void dele(node **head) {
+    int key;
+    node *temp = *head;
+    node *prev = NULL;
+
+    if (temp == NULL) {
+        printf("\nThe list is empty\n");
+        return;
+    }
+
+    printf("\nEnter the element you want to delete: ");
+    scanf("%d", &key);
+
+    temp = search(*head, key);
+    if (temp != NULL) {
+        prev = *head;
+
+        if (prev->data == key) {
+            *head = temp->next;
+            free(temp);
+        } else {
+            while (prev->next != NULL && prev->next->data != key)
+                prev = prev->next;
+
+            if (prev->next != NULL) {
+                temp = prev->next;
+                prev->next = temp->next;
+                free(temp);
+            } else
+                printf("\nThe element is not found in the list\n");
+        }
+    }
 }
-return head;
+
+node *get_node() {
+    node *temp = (node *)malloc(sizeof(node));
+    if (temp == NULL) {
+        printf("\nMemory allocation failed\n");
+        exit(1);
+    }
+    temp->next = NULL;
+    return temp;
 }
-node *insert_head(node *head)
-{
-node *New,*temp;
-New=get_node();
-printf("\nEnter the element which you want to insert");
-scanf("%d",&New->data);
-if(head==NULL)
-head=New;
-else
-{
-temp=head;
-New->next=temp;
-head=New;
+
+node *create() {
+    node *temp, *New, *head = NULL;
+    int val;
+    char ans = 'y';
+    int flag = TRUE;
+
+    do {
+        printf("\nEnter the element: ");
+        scanf("%d", &val);
+
+        New = get_node();
+        if (New == NULL) {
+            printf("\nMemory allocation failed\n");
+            exit(1);
+        }
+
+        New->data = val;
+        New->next = NULL;
+
+        if (flag == TRUE) {
+            head = New;
+            temp = head;
+            flag = FALSE;
+        } else {
+            temp->next = New;
+            temp = New;
+        }
+
+        printf("\nDo you want to enter more elements? (y/n): ");
+        scanf(" %c", &ans);
+    } while (ans == 'y' || ans == 'Y');
+
+    printf("\nThe list is created\n");
+    return head;
 }
-return head;
+
+void display(node *head) {
+    node *temp = head;
+
+    if (temp == NULL) {
+        printf("\nThe list is empty\n");
+        return;
+    }
+
+    printf("\n");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        if (temp->next != NULL)
+            printf("-> ");
+        temp = temp->next;
+    }
+    printf("\n");
 }
-void insert_last(node *head)
-{
-node *New,*temp;
-New=get_node();
-printf("\nenter the element which you want to insert");
-scanf("%d",&New->data);
-if(head==NULL)
-head=New;
-else
-{
-temp=head;
-while(temp->next!=NULL)
-temp=temp->next;
-temp->next=New;
-New->next=NULL;
+
+node *search(node *head, int key) {
+    node *temp = head;
+
+    if (temp == NULL) {
+        printf("\nThe linked list is empty\n");
+        return NULL;
+    }
+
+    while (temp != NULL) {
+        if (temp->data == key) {
+            printf("\nThe element is present in the list\nThe element is Deleted");
+            return temp;
+        }
+        temp = temp->next;
+    }
+
+    printf("\nThe element is not present in the list\n");
+    return NULL;
 }
+
+node *insert(node *head) {
+    int choice;
+    head = insert_head(head);
+    head = insert_last(head);
+    insert_after(head);
+    return head;
 }
-void insert_after(node *head)
-{
-int key;
-node *New,*temp;
-New=get_node();
-printf("\nenter the elements which you want to insert");
-scanf("%d",&New->data);
-if(head==NULL)
-{
-head=New;
+
+node *insert_head(node *head) {
+    int val;
+    node *New = get_node();
+
+    printf("\nEnter the element you want to insert: ");
+    scanf("%d", &val);
+    New->data = val;
+    New->next = head;
+
+    return New;
 }
-else
-{
-printf("\enter the element which you want to insert the node");
-scanf("%d",&key);
-temp=head;
-do
-{
-if(temp->data==key)
-{
-New->next-temp->next;
-temp->next=New;
-return;
+
+node *insert_last(node *head) {
+    int val;
+    node *New = get_node();
+    node *temp = head;
+
+    printf("\nEnter the element you want to insert: ");
+    scanf("%d", &val);
+    New->data = val;
+    New->next = NULL;
+
+    if (head == NULL)
+        head = New;
+    else {
+        while (temp->next != NULL)
+            temp = temp->next;
+        temp->next = New;
+    }
+
+    return head;
 }
-else
-temp=temp->next;
+
+void insert_after(node *head) {
+    int key;
+    node *New = get_node();
+    node *temp = head;
+
+    printf("\nEnter the element after which you want to insert the node: ");
+    scanf("%d", &key);
+
+    while (temp != NULL) {
+        if (temp->data == key) {
+            printf("\nEnter the element you want to insert: ");
+            scanf("%d", &New->data);
+            New->next = temp->next;
+            temp->next = New;
+            return;
+        }
+        temp = temp->next;
+    }
+
+    printf("\nThe specified element is not found in the list\n");
 }
-while(temp!=NULL);
-}
-}
-node *get_prev(node *head,int val)
-{
-node *temp,*prev;
-int flag;
-temp=head;
-if(temp==NULL)
-return NULL;
-flag=FALSE;
-prev=NULL;
-while(temp!=NULL && ! flag)
-{
-if(temp->data!=val)
-{
-prev=temp;
-temp=temp->next;
-}
-else
-flag=TRUE;
-}
-if(flag)
-return prev;
-else
-return NULL;
-}
-void dele(node **head)
-{
-node *temp,*prev;
-int key;
-temp=*head;
-if(temp==NULL)
-{
-printf("\nthe list is empty\n");
-return;
-}
-printf("\nenter the element you want to delete:");
-scanf("%d",&key);
-temp=search(*head,key);
-if(temp!=NULL)
-{
-prev=get_prev(*head,key);
-if(prev!=NULL)
-{
-prev->next=temp->next;
-free(temp);
-}
-else
-{
-*head=temp->next;
-free(temp);
-}
-printf("\nthe element is deleted\n");
-}
+
+int main() {
+    int choice;
+    node *head = NULL;
+
+    do {
+        printf("\nProgram to perform various operations on heap using dynamic memory management\n");
+        printf("1. Create\n");
+        printf("2. Display\n");
+        printf("3. Insert an element in the list\n");
+        printf("4. Delete an element from the list\n");
+        printf("5. Quit\n");
+        printf("Enter your choice (1-5): ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                head = create();
+                break;
+            case 2:
+                display(head);
+                break;
+            case 3:
+                head = insert(head);
+                break;
+            case 4:
+                dele(&head);
+                break;
+            case 5:
+                printf("Exiting the program...\n");
+                exit(0);
+            default:
+                printf("Invalid choice, try again.\n");
+        }
+    } while (choice != 5);
+
+    return 0;
 }
 ```
 # OUTPUT
-![Screenshot 2024-05-05 205446](https://github.com/HariviswanathB/Ex-12-IMPLEMENTATION-OF-HEAP-STORAGE-ALLOCATION-STRATEGY/assets/119103855/3d26eab8-66ed-4256-9f63-86342ea7465d)
+![image](https://github.com/NAGINENIROHITH/Ex-12-IMPLEMENTATION-OF-HEAP-STORAGE-ALLOCATION-STRATEGY/assets/118344049/afad51a6-ae06-4db1-a631-a64c3cd422e5)
+![image](https://github.com/NAGINENIROHITH/Ex-12-IMPLEMENTATION-OF-HEAP-STORAGE-ALLOCATION-STRATEGY/assets/118344049/620a4113-6f00-4743-a0f4-9d29fb18d390)
+![image](https://github.com/NAGINENIROHITH/Ex-12-IMPLEMENTATION-OF-HEAP-STORAGE-ALLOCATION-STRATEGY/assets/118344049/79a07fff-6df6-413e-8597-999eae4235bd)
 
 # RESULT
 The heap storage allocation strategy is implemented successfully, and the output is 
